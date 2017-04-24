@@ -1,0 +1,429 @@
+<!-- MAIN MENU -->
+<div class="header" align="center">
+  <!-- -->
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">PROYECTO FINAL FISICA III</a>
+        <!-- <a class="navbar-brand" href="/fisica/authors">PROYECTO FINAL FISICA III</a> -->
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a onclick="location.href='/fisica/index'">Interacciones entre cargas</a></li>
+        <li><a onclick="location.href='/fisica/campoelectrico'">Campo electrico debido cargas en linea infinita</a></li>
+        <li><a onclick="location.href='/fisica/magnetico'">Campo magnético</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<!-- END MENU -->
+<div class="page-header" align="left">
+  <h1>
+    <small>Interacción entre cargas eléctricas</small>
+  </h1>
+</div>
+<br>
+<div class="big-box"> <!-- Open Big box -->
+
+  <div class="parent">
+    <div id="menu">
+      <ul class="nav nav-pills nav-stacked">
+        <li>
+          <button onclick="addCharge()">Agregar carga</button>
+        </li>
+        <li>
+          <button onclick="start()">Animar cargas</button>
+        </li>
+      </ul>
+    </div>
+
+    <div id="container">
+    </div>
+  </div>
+  <br>
+
+  <script type="text/javascript">
+
+      //Global stage_01 and layer ---------------------------------------------------------------
+      //Create the stage_01
+
+      let stage_01;
+
+      if (typeof stage_01 === 'undefined') {
+          // the variable is defined
+          stage_01 = new Konva.Stage({
+              container: 'container',   // id of container <div>
+              width: 1000,
+              height: 500
+          });
+      }
+      //Create the layer
+      let layer = new Konva.Layer(); //Layer to use
+      let cargas = []; //Almacenar los protones y los electrones en este arreglo de cargas
+      let cant_cargas = 0; //contar la cantidad de cargas que se han ido agregando
+      let cant_protones = 0; //contar la cantidad de protones
+      let cant_electrones = 0; //contar la cantidad de electronesq1 = cargas[0].getCarga();
+
+      const K = 0.0009;
+
+      // ---------------------------------------------------------------------------------------
+      stage_01.add(layer);
+      /*
+       *    CLASE PROTON
+       */
+
+      function addDot(x, y, color) {
+
+          let line = new Konva.Circle({
+              x: x,
+              y: y,
+              radius: 2,
+              fill: color,
+              stroke: 'black',
+              strokeWidth: 1,
+              draggable: false
+          });
+
+          layer.add(line);
+          line.cache();
+      }
+
+      function addline(x1, y1, x2, y2, st, col) {
+          let line = new Konva.Line({
+              points: [x1, y1, x2, y2],
+              stroke: col,
+              strokeWidth: st,
+              lineCap: 'round',
+              lineJoin: 'round'
+          });
+
+          layer.add(line);
+      }
+
+      for (let i = 0; i < 500; i = i + 10) {
+          addline(0, i, 1000, i, 0.8, 'gray');
+          layer.draw();
+      }
+
+      for (let i = 0; i < 1000; i = i + 10) {
+          addline(i, 0, i, 500, 0.8, 'gray');
+          layer.draw();
+      }
+
+      class Proton {
+          //Metodos
+          constructor(magnitud) {
+
+              let color = 'red';
+              if (magnitud === 0) {
+                  color = 'black';
+              }
+
+              this.magnitud = magnitud;
+              //Create the object
+              this.proton = new Konva.Circle({
+                  x: Math.random() * (985 - 15 + 1) + 15,
+                  y: Math.random() * (485 - 15 + 1) + 15,
+                  radius: 9,
+                  fill: color,
+                  stroke: 'black',
+                  strokeWidth: 2,
+                  draggable: true
+              });
+              this.masa = 0.0000091;
+              this.acceleration = 0;
+              this.speed = [0, 0];
+              this.timeout = true;
+
+          }
+
+          getTimeout() {
+              return this.timeout;
+          }
+
+          setTimeout(bool) {
+              this.timeout = bool;
+          }
+
+          //getters
+          getMagnitud() {
+              return this.magnitud;
+          }
+
+          getCarga() {
+              return this.proton;
+          }
+
+          getVelocity() {
+              return this.speed;
+          }
+
+          setVelocity(_velocity) {
+              this.speed = _velocity;
+          }
+
+          getAcceleration() {
+              return this.acceleration;
+          }
+
+          setAcceleration(_a) {
+              this.acceleration = _a;
+          }
+
+          getMass() {
+              return this.masa;
+          }
+
+          //Dibujar
+          draw() {
+              layer.add(this.proton);
+              layer.draw();
+          }
+      }
+
+      /*** CLASE ELECTRON ***/
+      class Electron {
+
+          //Metodos
+          constructor(magnitud) {
+              this.magnitud = magnitud;
+              //Create the object
+              this.electron = new Konva.Circle({
+                  x: Math.random() * (985 - 15 + 1) + 15,
+                  y: Math.random() * (485 - 15 + 1) + 15,
+                  radius: 9,
+                  fill: 'blue',
+                  stroke: 'black',
+                  strokeWidth: 2,
+                  draggable: true
+              });
+              this.masa = 0.0000091;
+              this.acceleration = 0;
+              this.speed = [0, 0];
+              this.timeout = true;
+
+          }
+
+          getTimeout() {
+              return this.timeout;
+          }
+
+          setTimeout(bool) {
+              this.timeout = bool;
+          }
+
+          //getters
+          getMagnitud() {
+              return this.magnitud;
+          }
+
+          getCarga() {
+              return this.electron;
+          }
+
+          getVelocity() {
+              return this.speed;
+          }
+
+          setVelocity(_velocity) {
+              this.speed = _velocity;
+          }
+
+          getAcceleration() {
+              return this.acceleration;
+          }
+
+          setAcceleration(_a) {
+              this.acceleration = _a;
+          }
+
+          getMass() {
+              return this.masa;
+          }
+
+          //Dibujar
+          draw() {
+              layer.add(this.electron);
+              layer.draw();
+          }
+      }
+
+
+      let anim = new Konva.Animation(function (frame) {
+
+          let time = frame.timeDiff;
+          let stoped = false;
+
+          for (let i = 0; i < cargas.length; i++) {
+
+              let cargaA = cargas[i];
+
+              let vx = cargaA.getVelocity()[0];
+              let vy = cargaA.getVelocity()[1];
+
+              let acelerationX = [];
+              let acelerationY = [];
+
+
+              for (let j = 0; j < cargas.length; j++) {
+                  if (i !== j) {
+
+                      let cargaB = cargas[j];
+
+
+                      let x = cargaB.getCarga().x() - cargaA.getCarga().x();
+                      let y = (-1 * cargaB.getCarga().y()) - (-1 * cargaA.getCarga().y());
+
+                      let r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                      let alpha = Math.abs(Math.atan((cargaB.getCarga().y() - cargaA.getCarga().y()) / (cargaB.getCarga().x() - cargaA.getCarga().x()))) * (180 / Math.PI);
+
+                      if (r < 18) {
+
+                          let nMagnitud = cargaA.magnitud + cargaB.magnitud;
+                          if (nMagnitud > 0) {
+                              let obj = new Proton(nMagnitud);
+                              cargas.push(obj);
+                              obj.getCarga().x(cargaA.getCarga().x());
+                              obj.getCarga().y(cargaA.getCarga().y());
+                              obj.speed = [cargaA.speed[0] + cargaB.speed[0], cargaA.speed[1] + cargaB.speed[1]];
+                              obj.draw();
+                          } else if (nMagnitud < 0) {
+                              let obj = new Electron(nMagnitud);
+                              cargas.push(obj);
+                              obj.getCarga().x(cargaA.getCarga().x());
+                              obj.getCarga().y(cargaA.getCarga().y());
+                              obj.speed = [cargaA.speed[0] + cargaB.speed[0], cargaA.speed[1] + cargaB.speed[1]];
+                              obj.draw();
+                          } else {
+                              let obj = new Proton(nMagnitud);
+                              cargas.push(obj);
+                              obj.getCarga().x(cargaA.getCarga().x());
+                              obj.getCarga().y(cargaA.getCarga().y());
+                              obj.speed = [cargaA.speed[0] + cargaB.speed[0], cargaA.speed[1] + cargaB.speed[1]];
+                              obj.draw();
+                          }
+
+                          cargaA.getCarga().destroy();
+                          cargaB.getCarga().destroy();
+
+                          layer.draw();
+                          anim.stop();
+                          stoped = true;
+
+                          try {
+                              cargas.splice(cargas.indexOf(cargaA), 1);
+                              cargas.splice(cargas.indexOf(cargaB), 1);
+                              anim.start();
+                              break;
+                          } catch (e) {
+                              console.log(e)
+                          }
+                      } else {
+
+                          if (x < 0 && y >= 0) {
+                              alpha = 180 - alpha;
+                          } else if (x < 0 && y < 0) {
+                              alpha = 180 + alpha;
+                          } else if (x >= 0 && y < 0) {
+                              alpha = 360 - alpha;
+                          }
+
+                          let force = 0;
+
+                          force = ((cargas[j].getMagnitud() * cargas[i].getMagnitud() * K) / Math.pow(r, 2));
+
+                          let forceX = force * Math.cos(alpha * Math.PI / 180);
+                          let forceY = force * Math.sin(alpha * Math.PI / 180);
+
+                          let aX = 0 - (forceX / cargaA.getMass());
+                          let aY = forceY / cargaA.getMass();
+
+                          acelerationX.push(aX);
+                          acelerationY.push(aY);
+                      }
+
+                  }
+              }
+
+              if (!stoped) {
+                  let aX = 0;
+                  let aY = 0;
+
+                  for (let i = 0; i < acelerationX.length; i++) {
+                      aX = aX + acelerationX[i];
+                  }
+
+                  for (let i = 0; i < acelerationY.length; i++) {
+                      aY = aY + acelerationY[i];
+                  }
+
+                  vx = vx + (aX * time / 1000);
+                  vy = vy + (aY * time / 1000);
+                  cargas[i].setVelocity([vx, vy]);
+              }
+          }
+
+          for (let i = 0; i < cargas.length; i++) {
+
+              cargas[i].getCarga().x(cargas[i].getCarga().x() + cargas[i].getVelocity()[0] * time / 1000);
+              cargas[i].getCarga().y(cargas[i].getCarga().y() + cargas[i].getVelocity()[1] * time / 1000);
+
+              if (cargas[i].getTimeout()) {
+                  cargas[i].setTimeout(false);
+                  setTimeout(function () {
+                      try {
+                          addDot(cargas[i].getCarga().x(), cargas[i].getCarga().y(), cargas[i].getCarga().fill());
+                          cargas[i].setTimeout(true);
+                      } catch (e) {
+
+                      }
+                  }, 1000)
+              }
+          }
+
+      }, layer);
+
+      function start() {
+          anim.start();
+      }
+
+      function addCharge() {
+          let input = prompt("Magnitud: ", "");
+          if (input !== null) {
+              let magnitud = parseFloat(input);
+              let ob = null;
+              if (magnitud > 0) //crear un proton
+              {
+                  ob = new Proton(magnitud);
+                  cargas.push(ob);
+                  ob.draw();
+              }
+              else if (magnitud < 0) //crear un electron
+              {
+                  ob = new Electron(magnitud);
+                  cargas.push(ob);
+                  ob.draw();
+              }
+              else {
+                  window.alert("Debes especificar una magnitud NO nula.");
+              }
+              return ob;
+          }
+
+          else {
+              window.alert("La magnitud no puede ser nula.");
+          }
+
+      }
+      function removeCharge() {
+
+      }
+      function modifyCharge() {
+
+      }
+
+      layer.draw();
+
+
+  </script>
+
+</div> <!-- Close Big box -->
